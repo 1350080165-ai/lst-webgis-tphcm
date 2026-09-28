@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebGIS dự báo LST TP.HCM · CNTT6 Nhóm 3</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<nav>
+  <b>LST WebGIS · CNTT6 Nhóm 3</b>
+  <div class="links">
+    <a href="#gioi-thieu">Đề tài</a>
+    <a href="#webgis">Bản đồ</a>
+    <a href="#sosanh">So sánh mô hình</a>
+    <a href="#dulieu">Dữ liệu</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="in">
+    <div class="eyebrow">Đồ án môn học · 13_ĐH_CNTT6 · 2024–2028</div>
+    <h1>Xây dựng mô hình AI dự báo LST từ dữ liệu chuỗi thời gian</h1>
+    <p>Khu vực TP. Hồ Chí Minh, chuỗi LST 2016–2026. Dữ liệu nguồn đã chia Train (2016–2022) / Val (2023–2024) / Test (2025–2026), chuẩn hóa min–max, rồi khôi phục về °C để đưa lên biểu đồ và WebGIS.</p>
+    <div class="flow">
+      <span>Dữ liệu LST</span><span>→ Train / Val / Test</span><span>→ AI dự báo</span><span>→ Khôi phục °C</span><span>→ Biểu đồ / WebGIS</span>
+    </div>
+  </div>
+</header>
+
+<section id="gioi-thieu">
+  <div class="in">
+    <h2>Mục tiêu demo</h2>
+    <p class="lead">Công cụ hỗ trợ xem phân bố LST, chạy 6 mô hình AI trên trình duyệt, đánh giá MAE · RMSE · R² · MAPE trên tập test, và dự báo thêm 2027–2028.</p>
+    <div class="grid g4">
+      <div class="card"><div class="mut">Số điểm không gian</div><div class="kv" id="kpiPoints">—</div></div>
+      <div class="card"><div class="mut">Chuỗi thời gian</div><div class="kv" id="kpiYears">—</div></div>
+      <div class="card"><div class="mut">LST trung bình 2022</div><div class="kv" id="kpiMean">—</div></div>
+      <div class="card"><div class="mut">Scaler min–max (°C)</div><div class="kv" id="kpiRange">—</div></div>
+    </div>
+    <div class="note">
+      Bản WebGIS này dùng đúng file nhóm đã gửi: <code>lst_tphcm_wide_timeseries_filled.csv</code> (nguồn °C),
+      <code>lst_train.csv</code> / <code>lst_val.csv</code> / <code>lst_test.csv</code> (cùng mốc năm),
+      và <code>scaler_params.txt</code> (lst_min, lst_max) để đưa kết quả chuẩn hóa về LST °C.
+      Sáu mô hình chạy gọn trên trình duyệt để bảo vệ đồ án; bản huấn luyện đầy đủ trên Google Colab vẫn là phần nghiên cứu chính theo đề cương.
+    </div>
+  </div>
+</section>
+
+<section id="webgis" style="background:#fff">
+  <div class="in">
+    <h2>WebGIS phân bố LST</h2>
+    <p class="lead" id="mapTitle">Bản đồ nhiệt độ bề mặt đất</p>
+    <div class="toolbar">
+      <div>
+        <label for="yearSel">Năm</label>
+        <select id="yearSel"></select>
+      </div>
+      <div>
+        <label for="modelSel">Mô hình AI</label>
+        <select id="modelSel"><option>Đang huấn luyện…</option></select>
+      </div>
+      <div>
+        <label for="modeSel">Lớp hiển thị</label>
+        <select id="modeSel">
+          <option value="actual">LST thực tế</option>
+          <option value="pred">LST dự báo</option>
+          <option value="error">Sai số (thực − dự báo)</option>
+        </select>
+      </div>
+    </div>
+    <div id="map"></div>
+    <p class="status" id="status"></p>
+    <p class="mut" id="ptInfo">Chọn một điểm trên bản đồ để xem chuỗi thời gian.</p>
+    <div class="card" style="margin-top:12px">
+      <h3>Chuỗi thời gian tại điểm</h3>
+      <div id="chartWrap"><canvas id="chart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section id="sosanh">
+  <div class="in">
+    <h2>Đánh giá và so sánh mô hình</h2>
+    <p class="lead">Chỉ số tính trên LST đã khôi phục về °C. Tập test 2025–2026 dùng cho đánh giá cuối; tập val 2023–2024 dùng tham khảo. Hàng tô xanh là RMSE thấp nhất.</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Tập test (2025–2026)</h3>
+        <table>
+          <thead><tr><th>Mô hình</th><th>MAE</th><th>RMSE</th><th>R²</th><th>MAPE (%)</th></tr></thead>
+          <tbody id="tblTest"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Tập validation (2023–2024)</h3>
+        <table>
+          <thead><tr><th>Mô hình</th><th>MAE</th><th>RMSE</th><th>R²</th><th>MAPE (%)</th></tr></thead>
+          <tbody id="tblVal"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dulieu">
+  <div class="in">
+    <h2>Luồng dữ liệu theo đề cương</h2>
+    <div class="grid g3">
+      <div class="card">
+        <h3>Nguồn</h3>
+        <p>1527 điểm (longitude, latitude) × LST năm 2016–2026, đã điền thiếu, đơn vị °C.</p>
+      </div>
+      <div class="card">
+        <h3>Chia tập theo thời gian</h3>
+        <p>Train 2016–2022 học mô hình · Val 2023–2024 chỉnh · Test 2025–2026 tính MAE, RMSE, R², MAPE.</p>
+      </div>
+      <div class="card">
+        <h3>Scaler</h3>
+        <p>Min–max: LST_norm = (LST − lst_min) / (lst_max − lst_min). Dự báo nhân ngược để ra °C trước khi vẽ bản đồ.</p>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card"><h3>Linear Regression</h3><p>Mô hình nền: xu hướng tuyến tính theo năm tại từng điểm.</p></div>
+      <div class="card"><h3>Random Forest / XGBoost</h3><p>Học trên tọa độ, thời gian và LST trễ (lag) của toàn lưới điểm.</p></div>
+      <div class="card"><h3>LSTM · GRU · Transformer</h3><p>Cửa sổ 4 năm liên tiếp để dự năm tiếp theo, rồi lặp cho Val/Test/tương lai.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="in">
+    <div>Trường Đại học Tài nguyên và Môi trường TP.HCM · Khoa Công nghệ thông tin</div>
+    <div class="team" style="margin-top:8px">
+      Dương Minh Tuấn Anh · Bùi Thị Thanh Xuân · Đặng Khánh Nhu · Ngô Thị Ngân<br />
+      GVHD: TS. Dương Thị Thúy Nga · ThS. Nguyễn Duy Tuấn
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="js/lst-data.js"></script>
+<script src="js/models.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

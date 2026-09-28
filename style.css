@@ -1,0 +1,115 @@
+:root {
+  --navy: #12263f;
+  --teal: #0e7c86;
+  --teal2: #1aa79a;
+  --amb: #f2a33a;
+  --red: #c93c3c;
+  --grn: #2e9e5b;
+  --ink: #1f2a37;
+  --mut: #5b6b7b;
+  --bg: #f4f7fa;
+  --card: #fff;
+  --line: #dde3ea;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Calibri, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+}
+h1, h2, h3 { font-family: Cambria, Georgia, serif; margin: 0; }
+a { color: var(--teal); }
+nav {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--navy); color: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 10px 18px; flex-wrap: wrap;
+}
+nav b { font-size: 16px; }
+nav .links { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+nav a { color: #fff; text-decoration: none; opacity: .88; }
+nav a:hover { opacity: 1; }
+.hero { background: var(--navy); color: #fff; padding: 40px 18px 36px; }
+.in { max-width: 1180px; margin: 0 auto; }
+.eyebrow {
+  letter-spacing: 1.6px; font-weight: 700; color: var(--amb);
+  text-transform: uppercase; font-size: 11px;
+}
+.hero h1 { font-size: clamp(24px, 4vw, 38px); margin: 8px 0 10px; }
+.hero p { max-width: 720px; color: #c9d6e2; margin: 0 0 16px; }
+.flow { display: flex; flex-wrap: wrap; gap: 6px; }
+.flow span {
+  background: rgba(255,255,255,.12); padding: 5px 12px;
+  border-radius: 20px; font-size: 12px;
+}
+section { padding: 32px 18px; }
+section h2 { font-size: 24px; color: var(--teal); margin-bottom: 6px; }
+.lead { color: var(--mut); margin: 0 0 16px; font-size: 14px; }
+.grid { display: grid; gap: 14px; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g2 { grid-template-columns: 1.4fr 1fr; }
+@media (max-width: 900px) {
+  .g4, .g3, .g2 { grid-template-columns: 1fr; }
+}
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; padding: 16px;
+}
+.card h3 { font-size: 16px; margin-bottom: 6px; }
+.card p { font-size: 13.5px; color: var(--mut); margin: 0; }
+.kv { font-family: Cambria, Georgia, serif; font-size: 26px; font-weight: 700; }
+.mut { color: var(--mut); font-size: 12px; }
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: end;
+  margin-bottom: 12px;
+}
+label { font-size: 12px; color: var(--mut); display: block; margin-bottom: 4px; }
+select, input[type="range"], button {
+  font: inherit;
+}
+select {
+  padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
+  background: #fff; min-width: 180px;
+}
+button {
+  background: var(--teal2); color: #fff; border: 0; border-radius: 10px;
+  padding: 9px 14px; font-weight: 700; cursor: pointer;
+}
+button.alt { background: var(--navy); }
+button:disabled { opacity: .55; cursor: wait; }
+#map {
+  height: 520px; border-radius: 12px; border: 1px solid var(--line);
+  overflow: hidden;
+}
+.legend {
+  background: #fff; padding: 8px 10px; border-radius: 8px;
+  line-height: 1.3; font-size: 12px;
+}
+.legend i {
+  display: inline-block; width: 12px; height: 12px; margin-right: 6px;
+  border-radius: 50%;
+}
+.bar {
+  height: 10px; border-radius: 6px;
+  background: linear-gradient(90deg, #2b6cb0, #48bb78, #ecc94b, #ed8936, #c53030);
+  margin-top: 4px;
+}
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: right; }
+th { background: var(--navy); color: #fff; text-align: center; }
+td:first-child, th:first-child { text-align: left; }
+tr.best td { background: rgba(46,158,91,.12); font-weight: 700; }
+#chartWrap { height: 280px; }
+.status {
+  font-size: 13px; color: var(--mut); min-height: 1.4em; margin: 6px 0 0;
+}
+footer { background: var(--navy); color: #c9d6e2; padding: 22px 18px; font-size: 13px; }
+.team { font-size: 13px; color: #c9d6e2; }
+.note {
+  background: rgba(14,124,134,.08); border: 1px solid var(--teal);
+  border-radius: 10px; padding: 12px 14px; font-size: 13px; margin-top: 12px;
+}
